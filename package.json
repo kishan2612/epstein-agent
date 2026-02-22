@@ -1,0 +1,21 @@
+{
+  "name": "epstein-agent",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@langchain/community": "^1.1.17",
+    "@langchain/core": "^1.1.27",
+    "@langchain/ollama": "^1.2.4",
+    "@langchain/textsplitters": "^1.0.1",
+    "chromadb": "^3.3.1",
+    "langchain": "^1.2.25",
+    "ts-md5": "^2.0.1"
+  }
+}
