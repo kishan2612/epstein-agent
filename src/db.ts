@@ -3,10 +3,17 @@ import embeddings from "./embeddings";
 
 const vectorStore = new Chroma(embeddings, {
   collectionName: "eps-collection",
-  clientParams: {
-    port: 8000,
-    host: "localhost",
-  },
+  url: "http://localhost:8000",
+
+  // clientParams: {
+  //   port: 8000,
+  //   host: "localhost",
+  // },
 });
 
 export default vectorStore;
+
+export async function getVectorCount() {
+  const docs = await vectorStore.similaritySearch("test", 10000);
+  return docs.length;
+}

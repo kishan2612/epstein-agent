@@ -3,6 +3,14 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "li-f": "bun run src/cli.ts list",
+    "cr-f": "bun run src/cli.ts index src/assets/eps.txt",
+    "del-f": "bun run src/cli.ts delete src/assets/eps.txt",
+    "count-v": "bun run src/cli.ts count",
+    "askq": "bun run src/cli.ts ask",
+    "chm": "bun run src/cli.ts chat"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

@@ -1,37 +1,94 @@
-import { indexFile, deleteFile, listFiles } from "./indexer";
+import { indexFile, deleteFile } from "./indexer";
+import { askQuestion } from "./rag";
+import { getVectorCount } from "./db";
+import readline from "readline";
 
 const args = process.argv.slice(2);
+const command = args[0];
+
+async function startChat() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  console.log("\n📬 Email RAG Chat Mode Started");
+  console.log("Type 'exit' to quit.\n");
+
+  rl.on("line", async (input) => {
+    if (input.toLowerCase() === "exit") {
+      rl.close();
+      return;
+    }
+
+    try {
+      const result = await askQuestion(input);
+
+      console.log("\n🤖 Answer:\n");
+      console.log(result.answer);
+
+      console.log("\n--------------------------------\n");
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  });
+}
 
 async function main() {
-  const command = args[0];
-  const filePath = args[1];
-
   switch (command) {
     case "index":
-      if (!filePath) {
+      if (!args[1]) {
         console.log("Provide file path.");
         return;
       }
-      await indexFile(filePath);
+      await indexFile(args[1]);
       break;
 
     case "delete":
-      if (!filePath) {
+      if (!args[1]) {
         console.log("Provide file path.");
         return;
       }
-      await deleteFile(filePath);
+      await deleteFile(args[1]);
       break;
 
-    case "list":
-      await listFiles();
+    case "ask":
+      const question = args.slice(1).join(" ");
+      if (!question) {
+        console.log("Provide a question.");
+        return;
+      }
+
+      const result = await askQuestion(question);
+
+      console.log("\n🤖 Answer:\n");
+      console.log(result.answer);
+
+      console.log("\n📚 Citations:");
+      result.citations.forEach((c: any) => {
+        console.log(
+          `- Sender: ${c.sender} | Date: ${c.date} | Subject: ${c.subject}`,
+        );
+      });
+
+      break;
+
+    case "chat":
+      await startChat();
+      break;
+
+    case "count":
+      const count = await getVectorCount();
+      console.log("Total vectors stored:", count);
       break;
 
     default:
-      console.log("Commands:");
-      console.log("  bun run cli.ts index <filePath>");
-      console.log("  bun run cli.ts delete <filePath>");
-      console.log("  bun run cli.ts list");
+      console.log("\nAvailable Commands:");
+      console.log("  bun run src/cli.ts index <filePath>");
+      console.log("  bun run src/cli.ts delete <filePath>");
+      console.log('  bun run src/cli.ts ask "your question"');
+      console.log("  bun run src/cli.ts chat");
+      console.log("  bun run src/cli.ts count");
   }
 }
 
