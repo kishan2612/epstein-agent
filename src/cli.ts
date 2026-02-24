@@ -12,7 +12,7 @@ async function startChat() {
     output: process.stdout,
   });
 
-  console.log("\n📬 Email RAG Chat Mode Started");
+  console.log("\n🤖 Agent Chat Mode Started");
   console.log("Type 'exit' to quit.\n");
 
   rl.on("line", async (input) => {
@@ -66,9 +66,7 @@ async function main() {
 
       console.log("\n📚 Citations:");
       result.citations.forEach((c: any) => {
-        console.log(
-          `- Sender: ${c.sender} | Date: ${c.date} | Subject: ${c.subject}`,
-        );
+        console.log(`- Source: ${c.source}`);
       });
 
       break;

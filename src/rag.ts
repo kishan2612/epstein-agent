@@ -14,9 +14,7 @@ export async function askQuestion(question: string) {
     .map(
       (doc, i) => `
 Document ${i + 1}
-Sender: ${doc.metadata.sender}
-Date: ${doc.metadata.date}
-Subject: ${doc.metadata.subject}
+Source: ${doc.metadata.source}
 
 ${doc.pageContent}
   `,
@@ -29,7 +27,7 @@ ${doc.pageContent}
 You are a factual research assistant.
 
 Use ONLY the documents provided.
-If answer not found, say "Not found in indexed emails."
+If answer not found, say "Not found in indexed documents."
 
 Conversation History:
 ${chatHistory}
@@ -50,9 +48,7 @@ ${question}
     answer: response.content,
     citations: docs.map((d, i) => ({
       docNumber: i + 1,
-      sender: d.metadata.sender,
-      date: d.metadata.date,
-      subject: d.metadata.subject,
+      source: d.metadata.source,
     })),
   };
 }

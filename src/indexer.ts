@@ -2,7 +2,6 @@ import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import vectorStore from "./db";
 import { generateHash, readFile } from "./utils";
-import { parseEmails, type ParsedEmail } from "./emailParser";
 
 export async function indexFile(filePath: string) {
   const content = readFile(filePath);
@@ -20,33 +19,20 @@ export async function indexFile(filePath: string) {
 
   console.log("Splitting file into chunks...");
 
-  const emails: ParsedEmail[] = parseEmails(content);
-
   const textSplitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1000,
     chunkOverlap: 200,
   });
 
-  const documents: Document[] = [];
-
-  for (const [i, email] of emails.entries()) {
-    const chunks = await textSplitter.createDocuments([email.body]);
-
-    chunks.forEach((chunk, index) => {
-      documents.push({
-        pageContent: chunk.pageContent,
-        metadata: {
-          source: filePath,
-          fileHash,
-          sender: email.sender,
-          date: email.date,
-          subject: email.subject,
-          emailIndex: i,
-          chunkIndex: index,
-        },
-      });
-    });
-  }
+  const chunks = await textSplitter.createDocuments([content]);
+  const documents: Document[] = chunks.map((chunk, index) => ({
+    pageContent: chunk.pageContent,
+    metadata: {
+      source: filePath,
+      fileHash,
+      chunkIndex: index,
+    },
+  }));
 
   await vectorStore.addDocuments(documents);
   console.log(`Indexed ${documents.length} chunks.`);
